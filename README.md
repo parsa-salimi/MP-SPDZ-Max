@@ -40,6 +40,7 @@ echo 1 2 3 4 > Player-Data/Input-P1-0
 Scripts/mascot.sh tutorial
 ```
 
+
 This runs [the tutorial](Programs/Source/tutorial.mpc) with two
 parties and malicious security.
 
@@ -66,6 +67,22 @@ echo 1 2 3 4 > Player-Data/Input-P0-0
 echo 1 2 3 4 > Player-Data/Input-P1-0
 Scripts/mascot.sh tutorial
 ```
+
+#### Our protocol run through tutorial
+
+If you run what is below, it is a very basic run of 2 parties of our protocol. I will work on making this work for n parties before moving on to actually trying to run this through a locally hosted server. But the function part of the protocol can definitely work (and already does)
+
+```
+make -j 8 tldr
+./compile.py tpc_apt_schedule_tutorial
+echo 0 1 1 0 > Player-Data/Input-P0-0
+echo 1 0 1 1 > Player-Data/Input-P1-0
+Scripts/mascot.sh tpc_apt_schedule_tutorial
+```
+
+
+
+
 
 #### TL;DR (Docker)
 Build a docker image for `mascot-party.x`:
