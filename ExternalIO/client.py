@@ -30,7 +30,9 @@ class Client:
         self.specification.Receive(self.sockets[0])
 
     def receive_triples(self, T, n):
-        triples = [[0, 0, 0] * n]
+        triples = []
+        for i in range(n):
+            triples.append([0,0,0])
         os = octetStream()
         for socket in self.sockets:
             os.Receive(socket)

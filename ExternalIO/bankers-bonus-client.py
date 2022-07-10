@@ -9,7 +9,7 @@ from domains import *
 
 client_id = int(sys.argv[1])
 n_parties = int(sys.argv[2])
-bonus = float(sys.argv[3])
+bonus = sys.argv[3].split(",")
 finish = int(sys.argv[4])
 
 client = Client(['localhost'] * n_parties, 14000, client_id)
@@ -28,8 +28,7 @@ for socket in client.sockets:
     os.store(finish)
     os.Send(socket)
 
-for x in bonus, bonus * 2 ** 16:
-    client.send_private_inputs([domain(x)])
+client.send_private_inputs([domain(int(y)) for y in bonus])
 
-    print('Winning client id is :',
-          client.receive_outputs(domain, 1)[0].v % 2 ** 64)
+print('Winning index value is :',
+        client.receive_outputs(domain, 1)[0].v % 2 ** 64)

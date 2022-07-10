@@ -20,6 +20,19 @@ Scripts/<protocol>.sh bankers_bonus-1 &
 ./bankers-bonus-client.x 1 <nparties> 200 0 &
 ./bankers-bonus-client.x 2 <nparties> 50 1
 ```
+
+```
+make bankers-bonus-client.x
+./compile.py bankers_bonus 1
+Scripts/setup-ssl.sh 2
+Scripts/setup-clients.sh 3
+Scripts/mascot.sh bankers_bonus-1 &
+./bankers-bonus-client.x 0 2 100 0 &
+./bankers-bonus-client.x 1 2 200 0 &
+./bankers-bonus-client.x 2 2 50 1
+```
+
+
 `<protocol>` can be any arithmetic protocol (e.g., `mascot`) but not a
 binary protocol (e.g., `yao`).
 This should output that the winning id is 1. Note that the ids have to
