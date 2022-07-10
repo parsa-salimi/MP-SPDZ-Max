@@ -71,3 +71,24 @@ The example uses the `Client` class implemented in
 `ExternalIO/Client.hpp` to handle the communication, see
 https://mp-spdz.readthedocs.io/en/latest/io.html#reference for
 documentation.
+
+
+###Our protocol working example
+```
+make bankers-bonus-client.x
+./compile.py bankers_bonus 1
+Scripts/setup-ssl.sh 3
+Scripts/setup-clients.sh 3
+Scripts/mascot.sh bankers_bonus-1
+```
+Then Open 3 more terminals, and run 1 of the following lines in each 1
+
+```
+./ExternalIO/bankers-bonus-client.py 0 2 0,1,0,1,1,0 0
+./ExternalIO/bankers-bonus-client.py 1 2 1,0,1,1,0,1 0
+./ExternalIO/bankers-bonus-client.py 2 2 1,0,0,1,1,1 1
+
+```
+
+Each line represents a unique client. The first argument is the client_id. The second is the number of parties who are running the computation. The third is the binary vector representing the clients schedule. And the fourth should be a 0, except input a 1 for the last client to run the protocol.
+
