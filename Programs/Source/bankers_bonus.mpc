@@ -13,9 +13,10 @@
   Each round / game will reset and so this runs indefinitiely.
 """
 
+from http import client
 from Compiler.types import sint, regint, Array, MemValue
 from Compiler.library import print_ln, do_while, for_range
-from Compiler.util import if_else
+from Compiler.util import bit_and, if_else
 
 PORTNUM = 14000
 MAX_NUM_CLIENTS = 8
@@ -81,6 +82,23 @@ def n_party_max_index(number_clients, client_values, client_ids):
         index[i] = (max_value[i-1]<c.get(i)).if_else(i,index[i-1])
     return max_value[len(max_value)-1],index[len(index)-1]
 
+def check_binary_array(number_clients, client_values, client_ids):
+    array_ones = Array(len(client_values), sint)
+    array_zeros = Array(len(client_values), sint)
+    all_ones = Array(len(client_values),sint)
+    invalid_array = Array(len(client_values),sint)
+    @for_range(len(client_values))
+    def f(i):
+        ones = bit_and(client_values[i],sint(1))
+        zeros = bit_and(client_values[i],sint(0))
+        array_combine = ones+zeros
+        invalid_array[i] = (array_combine==sint(1)).if_else(sint(1),sint(0))
+        all_ones[i] = 1
+    
+    array_ones_and_zeros = Array.create_from(array_ones+array_zeros)
+    return invalid_array,all_ones
+
+
 def determine_winner(number_clients, client_values, client_ids):
     """Work out and return client_id which corresponds to max client_value"""
     
@@ -93,6 +111,28 @@ def write_winner_to_clients(sockets, number_clients, winning_client_id):
     # Setup authenticate result using share of random.
     # client can validate ∑ winning_client_id * ∑ rnd_from_triple = ∑ auth_result
     sint.reveal_to_clients(sockets.get_sub(number_clients), [winning_client_id])
+
+def write_valid_entries_to_clients(sockets, number_clients, valid_entries):
+    """Send share of winning client id to all clients who joined game."""
+
+    # Setup authenticate result using share of random.
+    # client can validate ∑ winning_client_id * ∑ rnd_from_triple = ∑ auth_result
+    sint.reveal_to_clients(sockets.get_sub(number_clients), [valid_entries])
+
+
+
+def check_legitimate_entries(number_clients, client_values, client_ids):
+    invalid_ids = Array(len(client_ids),sint)
+
+    @for_range(len(client_ids))
+    def f(i):
+        invalid_id,all_ones = check_binary_array(i,client_values[i],i)
+        if invalid_id.reveal()==all_ones.reveal():
+            invalid_ids[i]= sint(0)
+        else:
+            invalid_ids[i] = sint(1)
+    return invalid_ids
+
 
 def main():
     """Listen in while loop for players to join a game.
@@ -137,17 +177,31 @@ def main():
 
             @for_range(number_clients)
             def _(client_id):
+                client_values[client_id] = client_input(t, client_id)  
+            @for_range(number_clients)
+            def _(client_id):
                 client_values[client_id] = client_input(t, client_id)
 
+            
             max, index = n_party_max_index(number_clients, client_values,
                                                  client_ids)
+            valid_entries = check_legitimate_entries(number_clients, client_values,
+                                                 client_ids)
+            @for_range(len(valid_entries))
+            def _(client_id): 
+                print_ln('Validity of particiapants by ID: %s',valid_entries[client_id].reveal())
+                write_valid_entries_to_clients(client_sockets, number_clients,
+                                        valid_entries[client_id])
 
 
-            print_ln('Found winner, index: %s.', index.reveal())
-            print_ln('Found winner, max: %s.', max.reveal())
+            print_ln('Meeting time, index: %s.', index.reveal())
+            print_ln('Number of Participants who can make the meeting, max: %s.', max.reveal())
 
             write_winner_to_clients(client_sockets, number_clients,
                                     index)
+            write_winner_to_clients(client_sockets, number_clients,
+                                    max)
+                
 
         type_run(sint)
         # type_run(sfix)
