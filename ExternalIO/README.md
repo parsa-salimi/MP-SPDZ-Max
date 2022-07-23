@@ -92,3 +92,7 @@ Then Open 3 more terminals, and run 1 of the following lines in each 1
 
 Each line represents a unique client. The first argument is the client_id. The second is the number of parties who are running the computation. The third is the binary vector representing the clients schedule. And the fourth should be a 0, except input a 1 for the last client to run the protocol.
 
+The protocol now will output whether or not each particpant inputed a valid binary array before revealing the outputs. Each particpant must know how many clients are involved in the computation, or there will be a break in the pipeline. The parties should communicate this with the clients. 
+
+To expose a faulty client try change one of the values in the array above to a larger number (or negative number) and the protocol should indicate this as an issue.
+

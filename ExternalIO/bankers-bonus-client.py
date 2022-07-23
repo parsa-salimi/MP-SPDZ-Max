@@ -30,15 +30,22 @@ for socket in client.sockets:
 
 client.send_private_inputs([domain(int(y)) for y in bonus])
 
-for n in range(3):
+for i in range(3):
+    print(f'Valid input for client {i} is :',
+        client.receive_outputs(domain, 1)[0].v % 2 ** 64)
 
-    print('Winning index value is :',
-            client.receive_outputs(domain, 1)[0].v % 2 ** 64)
 
 
 print('Winning index value is :',
         client.receive_outputs(domain, 1)[0].v % 2 ** 64)
 
-
-print('Winning index value is :',
+print('Maximum index value is :',
         client.receive_outputs(domain, 1)[0].v % 2 ** 64)
+
+
+# print('Winning index value is :',
+#         client.receive_outputs(domain, 1)[0].v % 2 ** 64)
+
+
+# print('Winning index value is :',
+#         client.receive_outputs(domain, 1)[0].v % 2 ** 64)

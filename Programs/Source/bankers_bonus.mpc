@@ -82,21 +82,29 @@ def n_party_max_index(number_clients, client_values, client_ids):
         index[i] = (max_value[i-1]<c.get(i)).if_else(i,index[i-1])
     return max_value[len(max_value)-1],index[len(index)-1]
 
+def find_min_for_binary_array(binary_array):
+    """Work out and return client_id which corresponds to max client_value"""
+    min_value = Array(1, binary_array.value_type)
+    min_value[0] = binary_array[0]
+
+    @for_range(len(binary_array)-1)
+    def loop_body(i):
+        # Is this client input a new maximum, will be sint(1) if true, else sint(0)
+        is_new_max = min_value[0] > binary_array[i+1]
+        # Keep latest max_value
+        min_value[0] = if_else(is_new_max, binary_array[i+1], min_value[0])
+        
+    return min_value[0]
+
 def check_binary_array(number_clients, client_values, client_ids):
-    array_ones = Array(len(client_values), sint)
-    array_zeros = Array(len(client_values), sint)
-    all_ones = Array(len(client_values),sint)
+    invalid_array = Array(len(client_values),sint)
     invalid_array = Array(len(client_values),sint)
     @for_range(len(client_values))
     def f(i):
-        ones = bit_and(client_values[i],sint(1))
-        zeros = bit_and(client_values[i],sint(0))
-        array_combine = ones+zeros
-        invalid_array[i] = (array_combine==sint(1)).if_else(sint(1),sint(0))
-        all_ones[i] = 1
-    
-    array_ones_and_zeros = Array.create_from(array_ones+array_zeros)
-    return invalid_array,all_ones
+        high_value = (client_values[i]<=sint(1)).if_else(sint(1),sint(0))
+        low_value = (client_values[i]>=sint(0)).if_else(sint(1),sint(0))
+        invalid_array[i] = high_value*low_value
+    return invalid_array
 
 
 def determine_winner(number_clients, client_values, client_ids):
@@ -126,11 +134,9 @@ def check_legitimate_entries(number_clients, client_values, client_ids):
 
     @for_range(len(client_ids))
     def f(i):
-        invalid_id,all_ones = check_binary_array(i,client_values[i],i)
-        if invalid_id.reveal()==all_ones.reveal():
-            invalid_ids[i]= sint(0)
-        else:
-            invalid_ids[i] = sint(1)
+        invalid_id= check_binary_array(i,client_values[i],i)
+        min = find_min_for_binary_array(invalid_id)
+        invalid_ids[i] = min
     return invalid_ids
 
 
@@ -177,17 +183,16 @@ def main():
 
             @for_range(number_clients)
             def _(client_id):
-                client_values[client_id] = client_input(t, client_id)  
-            @for_range(number_clients)
-            def _(client_id):
                 client_values[client_id] = client_input(t, client_id)
-
+            # @for_range(number_clients)
+            # def _(client_id):
+            #     client_values[client_id] = client_input(t, client_id)
             
             max, index = n_party_max_index(number_clients, client_values,
                                                  client_ids)
             valid_entries = check_legitimate_entries(number_clients, client_values,
                                                  client_ids)
-            @for_range(len(valid_entries))
+            @for_range(number_clients)
             def _(client_id): 
                 print_ln('Validity of particiapants by ID: %s',valid_entries[client_id].reveal())
                 write_valid_entries_to_clients(client_sockets, number_clients,
@@ -200,7 +205,7 @@ def main():
             write_winner_to_clients(client_sockets, number_clients,
                                     index)
             write_winner_to_clients(client_sockets, number_clients,
-                                    max)
+                                    max )
                 
 
         type_run(sint)
