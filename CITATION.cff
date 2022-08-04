@@ -4,7 +4,7 @@ authors:
   - family-names: Salimi
     given-names: Parsa
   - family-names: Gold
-  - given-names: Jonathan
+    given-names: Jonathan
 title: "Mascot Private meeting scheduler"
 version: 1.0.0
 date-released: 2022-08-01
