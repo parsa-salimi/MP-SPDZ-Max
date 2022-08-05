@@ -1,3 +1,7 @@
+# MASCOT Private meeting scheduler #
+THis is the repository for the [Mascot Private meeting scheduler](paperlink) ([slides here](slideslink)) , a meeting scheduler forked from MP-SPDZ. The readme files below are specific to MP-SPDZ. Refer to the ExternalIO folder for instructions on how to run our protocol.
+
+
 # Multi-Protocol SPDZ [![Documentation Status](https://readthedocs.org/projects/mp-spdz/badge/?version=latest)](https://mp-spdz.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://dev.azure.com/data61/MP-SPDZ/_apis/build/status/data61.MP-SPDZ?branchName=master)](https://dev.azure.com/data61/MP-SPDZ/_build/latest?definitionId=7&branchName=master) [![Gitter](https://badges.gitter.im/MP-SPDZ/community.svg)](https://gitter.im/MP-SPDZ/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Software to benchmark various secure multi-party computation (MPC)
